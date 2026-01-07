@@ -17,6 +17,11 @@ public class JocDeOca {
     int controlJugadorPerGuanyar = 0;
     int ronda = 1;
     int tirNegatiu = 0;
+    int jugadorsEnPou = 0;
+    int menysDe63 = 0;
+    String tiro = "tiro";
+    //String escriureTiro = "";
+
     
     int[] ocaEnTauler = oca();
     int[] pontEnTauler = pont();
@@ -32,29 +37,34 @@ public class JocDeOca {
     int numeroDeJugadors = numJugadors();
     String[] nomFinals = preguntarNomJugadors(numeroDeJugadors);
     int[] posicionsJugadors = posiciojugadors(numeroDeJugadors);
+    int[] controlTirsNegatiusPerJugador = controlTirsNegatius(numeroDeJugadors);
+
 
     
     System.out.println("_______________________");
     System.out.println("||| El joc comença! |||");
     System.out.println("_______________________");
+
+    System.out.println("Per llençar els daus has de escriure: tiro. ");
   
     do{
-    System.out.println("Es la ronda " + ronda);
+    System.out.println("|||Ronda actual: " + ronda + "|||");
     int primerDau = dauUn();
     int segonDau = dauDos();
-  
-    if(controladorDeJugadors > numeroDeJugadors){
+    if(controladorDeJugadors > numeroDeJugadors){ //Serveix per dir el numero del jugador i controlarlo
                 controladorDeJugadors = 1;
      }
         torn(nomFinals, numeroDeJugadors, controladorDeJugadors);
         controladorDeJugadors++;
 
         
-        llençada(primerDau, segonDau, posicionsJugadors, numeroDeJugadors, jugadorActual, pontEnTauler, segonDau, primerDau, ocaEnTauler, segonDau, fonda, ronda);
+       llençada(primerDau, segonDau, posicionsJugadors, numeroDeJugadors, jugadorActual, pontEnTauler, primerDau, segonDau, ocaEnTauler, tirNegatiu, fonda, controlTirsNegatiusPerJugador, presoEnTauler, pouEnTauler, jugadorsEnPou, nomFinals, laberintEnTauler, jardiDeLaOcaEnTauler, laMortEnTauler, ronda, menysDe63);
          jugadorActual++;
+         System.out.println("--------------------------");
+
     
         controlJugadorPerGuanyar++;
-        if(controlJugadorPerGuanyar == numeroDeJugadors){
+        if(controlJugadorPerGuanyar == numeroDeJugadors){ //controlem el jugador per saber quin pot guanyar
             controlJugadorPerGuanyar = 0;
         }
 
@@ -66,7 +76,12 @@ public class JocDeOca {
              jugadorActual = 0;
         }
         }
-        while (posicionsJugadors[controlJugadorPerGuanyar] != 63);
+        while (posicionsJugadors[controlJugadorPerGuanyar] != jardiDeLaOcaEnTauler);
+        if(posicionsJugadors[controlJugadorPerGuanyar] == jardiDeLaOcaEnTauler){
+            System.out.println("Ha guanyat el jugador " + nomFinals[jugadorActual]  + "!");
+            return;
+        }
+        
    }
    
 
@@ -174,17 +189,30 @@ public class JocDeOca {
       return posicionDelsJugadors;
     }
 
-    public void llençada(int primerDau, int segonDau, int[] posicionsJugadors, int numeroDeJugadors, int jugadorActual, int[] pontEnTauler,int dauUn, int dauDos, int[] ocaEnTauler, int tirNegatiu, int fonda, int ronda){
-        // if(tirNegatiu == 0){ Buscar el error aqui
+    public void llençada(int primerDau, int segonDau, int[] posicionsJugadors, int numeroDeJugadors, int jugadorActual, int[] pontEnTauler,int dauUn, int dauDos, int[] ocaEnTauler, int tirNegatiu, int fonda, int[] controlTirsNegatiusPerJugador, int presoEnTauler, int pouEnTauler, int jugadorsEnPou, String[] nomFinals, int laberintEnTauler, int jardiDeLaOcaEnTauler, int laMortEnTauler, int ronda, int menysDe63){
+        if(controlTirsNegatiusPerJugador[jugadorActual] == 0){ 
+            controlarTiro();
           if (posicionsJugadors[jugadorActual] < 60){ //tirada de dos daus
             posicionsJugadors[jugadorActual] = posicionsJugadors[jugadorActual] + primerDau + segonDau;
-            System.out.println(">> Tiro \n " + "Has obtingut " + primerDau + " i " + segonDau + " = " + (primerDau+segonDau) + "\n Avances fins a la casella " + posicionsJugadors[jugadorActual]);
-            System.out.println(" ");
+            if(posicionsJugadors[jugadorActual] <= 63){
+              System.out.println(">> Tiro \n " + "Has obtingut " + primerDau + " i " + segonDau + " = " + (primerDau+segonDau) + "\n Avances fins a la casella " + posicionsJugadors[jugadorActual]); 
+            }
+            else{
+            menysDe63 = posicionsJugadors[jugadorActual] - 63;
+            posicionsJugadors[jugadorActual] = 63 - menysDe63;
+            System.out.println("Has obtingut " + primerDau + " i " + segonDau +", com el resultat es superior a 63 retrocedeixes desde la casella 63 fins la casella " + posicionsJugadors[jugadorActual]);
+            }
         }
         else{   //tirada de un dau
             posicionsJugadors[jugadorActual] = posicionsJugadors[jugadorActual] + primerDau;
-            System.out.println(">> Tiro \n " + "Has obtingut " + primerDau + "\n Avances fins a la casella " + posicionsJugadors[jugadorActual]);
-            System.out.println(" ");
+            if(posicionsJugadors[jugadorActual] <= 63){
+               System.out.println(">> Tiro \n " + "Has obtingut " + primerDau + "\n Avances fins a la casella " + posicionsJugadors[jugadorActual]);
+            }
+            else{
+                 menysDe63 = posicionsJugadors[jugadorActual] - 63;
+            posicionsJugadors[jugadorActual] = 63 - menysDe63;
+            System.out.println("Has obtingut " + primerDau + ", com el resultat es superior a 63 retrocedeixes desde la casella 63 fins la casella " + posicionsJugadors[jugadorActual]);
+            }
         }
         for(int i = 0; i < ocaEnTauler.length - 1; i++){//aqui comença la oca.
            
@@ -194,10 +222,11 @@ public class JocDeOca {
             
             posicionsJugadors[jugadorActual] = ocaEnTauler[i+1];
             System.out.println("De oca en oca y tiro porque me toca. \n" + "Avances fins a la casella " + posicionsJugadors[jugadorActual]);
+            controlarTiro();
             posicionsJugadors[jugadorActual] = posicionsJugadors[jugadorActual] + nouDauUn + nouDauDos;
             System.out.println(">> Tiro \n " + "Has obtingut " + nouDauUn + " i " + nouDauDos + " = " + (nouDauUn+nouDauDos) + "\n Avances fins a la casella " + posicionsJugadors[jugadorActual]);
             System.out.println(" ");
-            }//fins aqui esta la oca.
+            }//fins aqui esta la oca
         }
 
            
@@ -207,6 +236,7 @@ public class JocDeOca {
             
                 posicionsJugadors[jugadorActual] = pontEnTauler[0];
                 System.out.println("De puente a puente y tiro porque me lleva la corriente. \n" + "Tornes a la casella " + posicionsJugadors[jugadorActual]);
+                controlarTiro();
                 posicionsJugadors[jugadorActual] = posicionsJugadors[jugadorActual] + nouDauUn + nouDauDos;
                 System.out.println(">> Tiro \n " + "Has obtingut " + nouDauUn + " i " + nouDauDos + " = " + (nouDauUn+nouDauDos) + "\n Avances fins a la casella " + posicionsJugadors[jugadorActual]);
                 System.out.println(" ");
@@ -217,29 +247,81 @@ public class JocDeOca {
 
                     posicionsJugadors[jugadorActual] = pontEnTauler[1];
                     System.out.println("De puente a puente y tiro porque me lleva la corriente. \n" + "Avances fins a la casella " + posicionsJugadors[jugadorActual]);
+                    controlarTiro();
                     posicionsJugadors[jugadorActual] = posicionsJugadors[jugadorActual] + nouDauUn + nouDauDos;
                     System.out.println(">> Tiro \n " + "Has obtingut " + nouDauUn + " i " + nouDauDos + " = " + (nouDauUn+nouDauDos) + "\n Avances fins a la casella " + posicionsJugadors[jugadorActual]);
                      System.out.println(" ");  
                 }//Aqui acaba el pont
        
-                if(posicionsJugadors[jugadorActual] == fonda){
-                    tirNegatiu++;
+                if(posicionsJugadors[jugadorActual] == fonda){//Comença la fonda
+                    controlTirsNegatiusPerJugador[jugadorActual]++;
+                    System.out.println("Has caigut en la fonda, et perdras " + controlTirsNegatiusPerJugador[jugadorActual] + " torns.");
+                }//Acaba la fonda
+                if(posicionsJugadors[jugadorActual] == presoEnTauler){//comença la preso
+                    controlTirsNegatiusPerJugador[jugadorActual] += 3;
+                    System.out.println("Has caigut en la preso, et perdras " + controlTirsNegatiusPerJugador[jugadorActual] + " torns.");
+                }//Termina la preso
+                if(posicionsJugadors[jugadorActual] == pouEnTauler){//comença el pou
+                    controlTirsNegatiusPerJugador[jugadorActual] += 2;
+                    System.out.println("Has caigut en el pou, perdras " + controlTirsNegatiusPerJugador[jugadorActual] + " torns.");
+                    if(controlTirsNegatiusPerJugador[jugadorActual] == 2){
+                        jugadorsEnPou++;
+                        if(jugadorsEnPou > 1){
+                            for(int i = 0; i < controlTirsNegatiusPerJugador.length; i++){
+                            if( i != jugadorActual && controlTirsNegatiusPerJugador[i] > 0){
+                            controlTirsNegatiusPerJugador[i] = 0;
+                            jugadorsEnPou--;
+                            System.out.println("El jugador " + nomFinals[i] + " es alliberat!");
+                            }
+                        }
+                      }
+                    }
+                }//acaba el pou
+                if(posicionsJugadors[jugadorActual] == laberintEnTauler){
+                    posicionsJugadors[jugadorActual] = 39;
+                    System.out.println("Et perds en el laberint, retrocedeixes a la casella 39.");
+                }
+                if(posicionsJugadors[jugadorActual] == laMortEnTauler){
+                    posicionsJugadors[jugadorActual] = 0;
+                    System.out.println("Has mort, tornes a la casella de inici!");
+                }
+                if(primerDau == 3 && segonDau == 6 && ronda == 1){
+                    posicionsJugadors[jugadorActual] = 26;
+                    System.out.println("De dado a dado y tiro porque me ha tocado. \n" + "Avances fins a la casella " + posicionsJugadors[jugadorActual]);
+                }
+                if(primerDau == 4 && segonDau == 5 && ronda == 1){
+                    posicionsJugadors[jugadorActual] = 53;
+                    System.out.println("De dado a dado y tiro porque me ha tocado. \n" + "Avances fins a la casella " + posicionsJugadors[jugadorActual]);
                 }
                 
-     // } treure quan acabi amb el error
+     }
+     else{
+        controlTirsNegatiusPerJugador[jugadorActual]--;
+        System.out.println("Perds el torn, et queden " + controlTirsNegatiusPerJugador[jugadorActual] + " torns per tornar a jugar.");
+     }
 
-             
-          
-    }
+ }
 
     public void torn(String[] nomFinals, int numeroDeJugadors, int controladorDeJugadors){
-       
             System.out.println("Es el torn del jugador " + controladorDeJugadors + ", " + nomFinals[controladorDeJugadors-1] + "." );
-            escaner.nextLine();
+            String escriureTiro = "";
+            while(!escriureTiro.equals("tiro")){
+             System.out.println("Has de escriure: tiro");
+             escriureTiro = escaner.nextLine();
+            }
 
        }
-    
 
-
-    
+    public int[] controlTirsNegatius(int numeroDeJugadors){
+        int[] tirNegatiuControl = new int[numeroDeJugadors];
+        return tirNegatiuControl;
     }
+    
+    public void controlarTiro(){
+        String escriureTiro = "";
+            while(!escriureTiro.equals("tiro")){
+            System.out.println("Has de escriure: tiro");
+            escriureTiro = escaner.nextLine();
+        }
+    }
+}
